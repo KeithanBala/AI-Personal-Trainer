@@ -1,10 +1,9 @@
 import argparse
 import logging
 import time
-
 import cv2
 import numpy as np
-
+from contextlib import redirect_stdout
 from tf_pose.estimator import TfPoseEstimator
 from tf_pose.networks import get_graph_path, model_wh
 
@@ -37,6 +36,9 @@ if __name__ == '__main__':
     
     parser.add_argument('--tensorrt', type=str, default="False",
                         help='for tensorrt process.')
+
+    parser.add_argument('--output_json', type=str, default="False",
+                        help='for json output')
     args = parser.parse_args()
 
     logger.debug('initialization %s : %s' % (args.model, get_graph_path(args.model)))
@@ -50,16 +52,26 @@ if __name__ == '__main__':
     ret_val, image = cam.read()
     logger.info('cam image=%dx%d' % (image.shape[1], image.shape[0]))
 
+    with open('out.txt', 'w') as f:
+            print('')
+    
     while True:
         ret_val, image = cam.read()
 
-        logger.debug('image process+')
+        #logger.debug('image process+')
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
 
-        logger.debug('postprocess+')
+        #logger.debug('postprocess+')
         image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
+        
+        print(humans)
+        #logger.debug('show+')
+        
 
-        logger.debug('show+')
+        with open('out.txt', 'a') as f:
+            with redirect_stdout(f):
+                print(humans)
+
         cv2.putText(image,
                     "FPS: %f" % (1.0 / (time.time() - fps_time)),
                     (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
@@ -68,6 +80,6 @@ if __name__ == '__main__':
         fps_time = time.time()
         if cv2.waitKey(1) == 27:
             break
-        logger.debug('finished+')
+        #logger.debug('finished+')
 
     cv2.destroyAllWindows()

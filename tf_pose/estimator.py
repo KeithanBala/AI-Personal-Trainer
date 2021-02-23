@@ -1,6 +1,6 @@
 import logging
 import math
-
+import os, json
 import slidingwindow as sw
 
 import cv2
@@ -11,7 +11,7 @@ import time
 from tf_pose import common
 from tf_pose.common import CocoPart
 from tf_pose.tensblur.smoother import Smoother
-# import tensorflow.contrib.tensorrt as trt
+#import tensorflow.contrib.tensorrt as trt
 
 try:
     from tf_pose.pafprocess import pafprocess
@@ -260,7 +260,7 @@ class BodyPart:
         return CocoPart(self.part_idx)
 
     def __str__(self):
-        return 'BodyPart:%d-(%.2f, %.2f) score=%.2f' % (self.part_idx, self.x, self.y, self.score)
+        return 'BodyPart:%d-(%.2f, %.2f)' % (self.part_idx, self.x, self.y)
 
     def __repr__(self):
         return self.__str__()
@@ -410,6 +410,8 @@ class TfPoseEstimator:
             npimg = np.copy(npimg)
         image_h, image_w = npimg.shape[:2]
         centers = {}
+        dc = {"people":[]}
+
         for human in humans:
             # draw point
             for i in range(common.CocoPart.Background.value):
@@ -417,8 +419,10 @@ class TfPoseEstimator:
                     continue
 
                 body_part = human.body_parts[i]
+                #print(body_part)
                 center = (int(body_part.x * image_w + 0.5), int(body_part.y * image_h + 0.5))
                 centers[i] = center
+
                 cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=3, lineType=8, shift=0)
 
             # draw line
@@ -428,6 +432,11 @@ class TfPoseEstimator:
 
                 # npimg = cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
                 cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
+            '''
+            if output_json_dir:
+                with open(os.path.join(output_json_dir, '{0}_keypoints.json'.format(str(frame).zfill(12))), 'w') as outfile:
+                    json.dump(dc, outfile)
+            '''
 
         return npimg
 
