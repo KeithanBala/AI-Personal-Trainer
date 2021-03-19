@@ -260,7 +260,7 @@ class BodyPart:
         return CocoPart(self.part_idx)
 
     def __str__(self):
-        return 'BodyPart:%d-(%.2f, %.2f)' % (self.part_idx, self.x, self.y)
+        return '%.2f %.2f' % ( self.x, self.y)
 
     def __repr__(self):
         return self.__str__()
