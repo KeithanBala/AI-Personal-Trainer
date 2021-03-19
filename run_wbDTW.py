@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 'RAnkle', 'LHip', 'LKnee', 'LAnkle', 'REye', 'LEye', 'REar', 'LEar', 'Background']
 
     with open('out.csv', 'w') as csvfile: 
-            # creating a csv dict writer object 
+            # creating a csv writer object 
             csvwriter = csv.writer(csvfile)             
             csvwriter.writerow(fields)   
 
@@ -132,12 +132,9 @@ if __name__ == '__main__':
                     str(humans[0].body_parts[12]), str(humans[0].body_parts[13]), str(humans[0].body_parts[14]), 
                     str(humans[0].body_parts[15]), str(humans[0].body_parts[16]),str(humans[0].body_parts[17])]] 
                 
-                if len(humans[0].body_parts.keys())-1 == 17: #wait for all joints to be in frame
+                #check if joints for shoulder press are in frame
+                if all (k in str(humans[0].body_parts.keys()) for k in ('2','3','4','5','6','7')):
                     csvwriter.writerows(body_list)
-
-                    # rshoul_b = body_list[2]
-                    # relbow_b = body_list[3]
-                    # rwrist_b = body_list[4]
 
                     df_user = pd.read_csv('out.csv')
 
@@ -158,42 +155,37 @@ if __name__ == '__main__':
                     for i in range(len(lshoul_uY)):
                         leftArm_uangles.append(angle3pt(lshoul_uX[i],lshoul_uY[i], lelbow_uX[i], lelbow_uY[i], lwrist_uX[i], lwrist_uY[i]))
 
+                    #keep track of line/frame
                     line = len(leftArm_uangles)
                     print(line)
 
+                    #calculate DTW
                     right_dist.append(dtw.distance(rightArm_uangles[:line], rightArm_eangles[:line]))
                     left_dist.append(dtw.distance(leftArm_uangles[:line], leftArm_eangles[:line]))
 
-                    x = right_dist[-1] - right_dist[-2]
-                    y = left_dist[-1] - left_dist[-2]
-                    right_rate.append(x)
-                    left_rate.append(y)
-                    #print(right_dist[-1])
-                    #print(right_rate[-1])
-                    #print(left_rate[-1])
+                    #calculate rate of change of DTW
+                    right_rate.append(right_dist[-1] - right_dist[-2])
+                    left_rate.append(left_dist[-1] - left_dist[-2])
 
-                    if (right_dist[-1] < 200):
-                        print("Amazing!")
-                    elif(right_dist[-1] > 200 and right_dist[-1] < 600):
+                    print((right_dist[-1]+left_dist[-1]))
+                    print(right_rate[-1]+left_rate[-1])
+
+                    if ((right_dist[-1]+left_dist[-1]) < 400):
+                        print("Amazing!!!")
+                    elif((right_dist[-1]+left_dist[-1]) > 400 and (right_dist[-1]+left_dist[-1]) < 1200):
                         print("Average")
-                    elif(right_dist[-1] > 600):
+                    elif((right_dist[-1]+left_dist[-1]) > 1200):
                         print("BAD!!!")
-
+                    '''
                     with open('out_rateR.txt', 'a') as f1: 
                         with redirect_stdout(f1):
                             print(right_rate[-1], end = "\n")
-
-                    '''with open('out_distR.txt', 'a') as f2: 
-                        with redirect_stdout(f2):
-                            print(left_dist)'''
-
-                    '''print(right_dist)
-                    print(left_dist)'''
+                    '''
 
                 else:
                     raise Exception("Joints out of frame...")
             except:
-                print("Need to get all joints in frame")
+                print("Need to get necessary joints in frame")
         
         cv2.putText(image,
                     "FPS: %f" % (1.0 / (time.time() - fps_time)),
@@ -201,8 +193,8 @@ if __name__ == '__main__':
                     (0, 255, 0), 2)
         cv2.imshow('tf-pose-estimation result', image)
         fps_time = time.time()
+
         if cv2.waitKey(1) == 27:
             break
-        #logger.debug('finished+')
 
     cv2.destroyAllWindows()
