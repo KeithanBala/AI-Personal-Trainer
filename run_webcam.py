@@ -4,10 +4,13 @@ import time
 import cv2
 import re
 import csv
+import pandas as pd
 import numpy as np
 from contextlib import redirect_stdout
 from tf_pose.estimator import TfPoseEstimator
 from tf_pose.networks import get_graph_path, model_wh
+import math
+from dtaidistance import dtw
 
 logger = logging.getLogger('TfPoseEstimator-WebCam')
 logger.setLevel(logging.DEBUG)
@@ -21,6 +24,22 @@ fps_time = 0
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
+
+def getXY(data):
+    x = []
+    y = []
+    for i in range(len(data)):
+        x.append(float(data[i].split(' ')[0]))
+        y.append(float(data[i].split(' ')[1]))
+
+    return x, y
+
+def angle3pt(ax,ay, bx,by, cx,cy):
+    # Counterclockwise angle in degrees by turning from a to c around b Returns a float between 0.0 and 360.0
+    ang = math.degrees(math.atan2(cy-by, cx-bx) - math.atan2(ay-by, ax-bx))
+    #ang = ang + 360 if ang < 0 else ang
+
+    return abs(ang)
 
 
 if __name__ == '__main__':
@@ -54,9 +73,11 @@ if __name__ == '__main__':
     ret_val, image = cam.read()
     logger.info('cam image=%dx%d' % (image.shape[1], image.shape[0]))
 
+
+    #clear output file
     fields = ['Nose', 'Neck', 'RShoulder', 'RElbow', 'RWrist', 'LShoulder', 'LElbow', 'LWrist', 'RHip', 'RKnee', 
                 'RAnkle', 'LHip', 'LKnee', 'LAnkle', 'REye', 'LEye', 'REar', 'LEar', 'Background']
-    #clear output file
+
     with open('out.csv', 'w') as csvfile: 
             # creating a csv dict writer object 
             csvwriter = csv.writer(csvfile)             
@@ -70,58 +91,28 @@ if __name__ == '__main__':
 
         #logger.debug('postprocess+')
         image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
-
-        print(humans[0].body_parts)
-        #print(str(humans[0].body_parts[0])+', '+ str(humans[0].body_parts[1])) # {0: [0.54, 0.69], 1: [0.50, 0.92], 14: [0.50, 0.64], 15: [0.58, 0.64], 16: [0.44, 0.68], 17: [0.62, 0.68]}
-        #print(humans[0].body_parts.keys()) # dict_keys([0, 14, 15, 16, 17])
-        #print(humans[0].body_parts.items()) # dict_items([(0, BodyPart:0 x:0.56 y:0.64), (14, BodyPart:14 x:0.49 y:0.57), (15, BodyPart:15 x:0.60 y:0.55), (16, BodyPart:16 x:0.44 y:0.60), (17, BodyPart:17 x:0.64 y:0.55)])
         
-
-        fields = ['Nose', 'Neck', 'RShoulder', 'RElbow', 'RWrist', 'LShoulder', 'LElbow', 'LWrist', 'RHip', 'RKnee', 'RAnkle', 'LHip', 'LKnee', 'LAnkle', 'REye', 'LEye', 'REar', 'LEar', 'Background']
         #fields = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-        #logger.debug('show+')
-        body_list = [[str(humans[0].body_parts[0]), str(humans[0].body_parts[1]), str(humans[0].body_parts[2]), 
-                    str(humans[0].body_parts[3]), str(humans[0].body_parts[4]), str(humans[0].body_parts[5]), 
-                    str(humans[0].body_parts[6]), str(humans[0].body_parts[7]), str(humans[0].body_parts[8]), 
-                    str(humans[0].body_parts[9]), str(humans[0].body_parts[10]), str(humans[0].body_parts[11]), 
-                    str(humans[0].body_parts[12]), str(humans[0].body_parts[13]), str(humans[0].body_parts[14]), 
-                    str(humans[0].body_parts[15]), str(humans[0].body_parts[16]), str(humans[0].body_parts[17])]] 
         
         with open('out.csv', 'a') as csvfile: 
             # creating a csv dict writer object 
             csvwriter = csv.writer(csvfile)            
             # writing data rows 
-            csvwriter.writerows(body_list)
-
-        '''
-        try:
-            if len(humans[0].body_parts.keys()) == 18: #wait for all joints to be in frame 
-                with open(filename, 'w') as csvfile: 
-                    # creating a csv dict writer object 
-                    writer = csv.DictWriter(csvfile, fieldnames = fields) 
-                      
-                    # writing headers (field names) 
-                    writer.writeheader() 
-                      
-                    # writing data rows 
-                    writer.writerows(body_list)
-            else:
-                raise Exception("Need to get all joints in frame")
-        except:
-            print("No human in frame")
-        '''
-            
-        '''
-        try:
-            if len(humans[0].body_parts.keys()) == 18: #wait for all joints to be in frame 
-                with open('out.txt', 'a') as f:
-                    with redirect_stdout(f):
-                        print(humans[0].body_parts)
-            else:
-                raise Exception("Need to get all joints in frame")
-        except:
-            print("No human in frame")
-        '''
+            try:
+                body_list = [[str(humans[0].body_parts[0]), str(humans[0].body_parts[1]), str(humans[0].body_parts[2]), 
+                    str(humans[0].body_parts[3]), str(humans[0].body_parts[4]), str(humans[0].body_parts[5]), 
+                    str(humans[0].body_parts[6]), str(humans[0].body_parts[7]), str(humans[0].body_parts[8]), 
+                    str(humans[0].body_parts[9]), str(humans[0].body_parts[10]), str(humans[0].body_parts[11]), 
+                    str(humans[0].body_parts[12]), str(humans[0].body_parts[13]), str(humans[0].body_parts[14]), 
+                    str(humans[0].body_parts[15]), str(humans[0].body_parts[16]),str(humans[0].body_parts[17])]] 
+                
+                if len(humans[0].body_parts.keys())-1 == 17: #wait for all joints to be in frame
+                    csvwriter.writerows(body_list)
+                else:
+                    raise Exception("Joints out of frame...")
+            except:
+                print("Need to get all joints in frame")
+        
         cv2.putText(image,
                     "FPS: %f" % (1.0 / (time.time() - fps_time)),
                     (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
