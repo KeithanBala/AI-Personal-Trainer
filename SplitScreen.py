@@ -39,7 +39,7 @@ def main():
             print(selection)
             print(what)
 
-            if selection[0] == 'Shoulder Press':
+            if not selection:
                 print('YES')
 
 

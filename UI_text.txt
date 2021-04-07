@@ -1,0 +1,46 @@
+Instructions:
+
+	HOW IT WORKS:
+	The AI Personal Trainer uses machine learning algorithims, implemented with tensorFlow and OpenCV, to track your body
+	and compare your movements during workouts with our expert videos and give you REAL TIME FEEDBACK on your progress. Our
+	goal is to provide everyone the opertunity to stay and maintain physical fitness during these unprecedented times due to
+	the COVID-19 epidemic.
+
+	HOW TO SET IT UP:
+	For the best results please place your webcam/laptop in an area in which you can easily view your screen while having your
+	whole body in frame for the AI Trainer to read. To check if your possible set up can work effectively please use our 
+	'Test Setup' feature in the Home screen before you attempt a workout. We seen that the AI Trainer works best in areas with 
+	ample lighting and room for you to move around in. 
+
+
+Support:
+For any product concerns or technical support please email us at: support@aitrainer.com
+
+WORKOUT INSTRUCTIONS
+
+	Shoulder Press:
+
+	Position your feet shoulder-width apart and stand holding two dumbbells at shoulder height with an overhand grip. Press 
+	the weights up above your head until your arms are fully extended. Return slowly to the start position. 
+	Expert tip: Avoid the urge to arch your back and tilting your hids forward 
+	
+	Press start when you are ready to commence the workout.
+
+	Lateral Raise:
+	
+	Stand or sit with a dumbbell in each hand at your sides. Keep your back straight, brace your core, and then slowly lift the 
+	weights out to the side until your arms are parallel with the floor, with the elbow slightly bent.
+	Expert tip: When using weights make sure to use very light weights as it does not take much to work this muscle 	
+
+	Press start when you are ready to commence the workout.
+
+	Squat:
+
+	Stand with feet hip-width apart, holding dumbbells at shoulders, with abs tight. Send hips back and bend knees to lower 
+	until your thighs are at least parallel to the ground, ideally lower. Push back up to the starting position.
+	Expert tip: If you are just starting out you can ditch the weights and clasp your hands in front of your chest for balance
+	Expert tip: To check if your form is correct, when decending on the movement look down and see if your knee goes over your toes,
+	if so adjust by shifting your body weight to your heals to drive the movement through your glutes and less with your knees!
+
+	Press start when you are ready to commence the workout.
+

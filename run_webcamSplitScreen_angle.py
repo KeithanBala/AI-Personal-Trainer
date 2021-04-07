@@ -53,11 +53,11 @@ layout = [[sg.Image(filename='', key='image'), sg.Image(filename='', key='image2
           [sg.Exit('Exit')]]
 
 # create the window and show it without the plot
-window = sg.Window('Demo Application - OpenCV Integration', layout, location=(0, 400), size = (1300, 575))
+window = sg.Window('Demo Application - OpenCV Integration', layout, size = (1300, 575))
 progress_bar = window['progressbar']
 
 # ---===--- Event LOOP Read and display frames, operate the GUI --- #
-cap1 = cv2.VideoCapture('abdultest.mp4')
+cap1 = cv2.VideoCapture('workout_files/shoulder-press-expert_fast2.mp4')
 recording = False
 ###-----------------------------------------------------------------------------------------FROM SPLITSCREEN
 
@@ -140,15 +140,13 @@ while True:
         ret_val, image = cam.read()
         ret, frame1 = cap1.read()
         
-        frame1 = imutils.resize(frame1, width=640)
-
         
         if frame1 is None:
-            cap1 = cv2.VideoCapture('abdultest.mp4')
+            cap1 = cv2.VideoCapture('workout_files/shoulder-press-expert_fast2.mp4')
             ret, frame1 = cap1.read()
-            frame1 = imutils.resize(frame1, width=640)
+            frame1 = imutils.resize(frame1, width= 610)
         else:
-            frame1 = imutils.resize(frame1, width=640)
+            frame1 = imutils.resize(frame1, width= 610)
         
 
         #logger.debug('image process+')
