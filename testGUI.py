@@ -14,7 +14,7 @@ def shoulder_press():
                 "\n"
                 "Press start when you are ready to commence the workout.\n")
     
-    g1 = r'C:\Users\Keithan\Documents\School\Capstone\AI-Personal-Trainer\workout_gifs\shoulder_press.gif'
+    g1 = r'workout_gifs\shoulder_press.gif'
     gifs = [g1]
 
     layout = [[sg.Image(filename = '', background_color = 'white', key = 'image')],
@@ -40,7 +40,7 @@ def shoulder_press():
             break
         
         if event == 'Start':
-            os.system('python run_webcamSplitScreen_angle.py --model=mobilenet_thin --resize=432x368 --camera=0')
+            os.system('python run_shoulderpress.py --model=mobilenet_thin --resize=432x368 --camera=0')
             window.close()
         
         imgbytes = cv2.imencode('.png', frame1)[1].tobytes()
@@ -60,7 +60,7 @@ def squat():
                 "\n"
                 "Press start when you are ready to commence the workout.\n")
 
-    g1 = r'C:\Users\Keithan\Documents\School\Capstone\AI-Personal-Trainer\workout_gifs\squat.gif'
+    g1 = r'workout_gifs\squat.gif'
     gifs = [g1]
     
     center_gif = [[sg.Image(filename = '', background_color = 'white', key = 'image')]]
@@ -89,7 +89,7 @@ def squat():
             break
 
         if event == 'Start':
-            print('File Not Made Yet')
+            os.system('python run_squat.py --model=mobilenet_thin --resize=432x368 --camera=0')
             window.close()
         
         imgbytes = cv2.imencode('.png', frame1)[1].tobytes()
@@ -106,7 +106,7 @@ def lateral_raise():
                 "\n"
                 "Press start when you are ready to commence the workout.\n")
     
-    g1 = r'C:\Users\Keithan\Documents\School\Capstone\AI-Personal-Trainer\workout_gifs\side_raise.gif'
+    g1 = r'workout_gifs\side_raise.gif'
     gif = [g1]
 
     center_gif = [[sg.Image(filename = '', background_color = 'white', key = 'image')]]
@@ -135,7 +135,7 @@ def lateral_raise():
             break
 
         if event == 'Start':
-            print('File Not Made Yet')
+            os.system('python run_lateralraise.py --model=mobilenet_thin --resize=432x368 --camera=0')
             window.close()
         
         imgbytes = cv2.imencode('.png', frame1)[1].tobytes()
